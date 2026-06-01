@@ -111,14 +111,15 @@ jobs:
       uses: pierotofy/set-swap-space@master
       with:
         swap-size-gb: 12
-
-    - name: Switch to Python2
+    - name: Switch to Python2 (legacy branches only)
+      if: ${{ ! contains(fromJSON('["twrp-11","twrp-12.1"]'), github.event.inputs.MANIFEST_BRANCH) }}
       run: |
-        sudo apt -y install python
+        # 添加 deadsnakes PPA 来获取 python2
+        sudo add-apt-repository ppa:deadsnakes/ppa -y
+        sudo apt update
+        sudo apt install python2 -y
         sudo rm -rf /usr/bin/python
         sudo ln -s /usr/bin/python2 /usr/bin/python
-        # sudo ln -s /usr/bin/python3 /usr/bin/python3
-      continue-on-error: true
 
     - name: Building recovery
       run: |
